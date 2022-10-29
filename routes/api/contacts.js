@@ -1,5 +1,4 @@
 const express = require('express');
-const Joi = require('joi');
 
 const {RequestError} = require('../../helpers');
 
@@ -7,11 +6,9 @@ const router = express.Router();
 
 const contacts = require('../../models/contacts');
 
-const addSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  phone: Joi.string().required(),
-});
+const {validate} = require('../../middlewares');
+
+const schema = require('../../schemas');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -39,10 +36,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const {error} = addSchema.validate(req.body);
-    if (error) {
-      throw RequestError(400, 'missing required name field');
-    }
+    validate(schema.addSchema);
     const result = await contacts.addContact(req.body);
     res.status(201).json(result);
   } catch (error) {
@@ -65,10 +59,7 @@ router.delete('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    const {error} = addSchema.validate(req.body);
-    if (error) {
-      throw RequestError(400, 'missing fields');
-    }
+    validate(schema.addSchema);
     const {id} = req.params;
     const result = await contacts.updateContact(id, req.body);
     if (!result) {
