@@ -1,74 +1,31 @@
 const express = require('express');
 
-const {RequestError} = require('../../helpers');
-
 const router = express.Router();
 
-const contacts = require('../../models/contacts');
+const {validationBody} = require('../../middlewares');
 
-const {validate} = require('../../middlewares');
+const {controllerWrapper} = require('../../helpers');
 
-const schema = require('../../schemas');
+const schemas = require('../../schemas/contactSchema');
 
-router.get('/', async (req, res, next) => {
-  try {
-    const result = await contacts.listContacts();
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+const controllers = require('../../controllers/contacts');
 
-router.get('/:id', async (req, res, next) => {
-  try {
-    const {id} = req.params;
+router.get('/', controllerWrapper(controllers.getAllContacts));
 
-    const result = await contacts.getById(id);
+router.get('/:id', controllerWrapper(controllers.getContactById));
 
-    if (!result) {
-      throw RequestError(404, 'Not found');
-    }
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post(
+  '/',
+  validationBody(schemas.addSchema),
+  controllerWrapper(controllers.addContact)
+);
 
-router.post('/', async (req, res, next) => {
-  try {
-    validate(schema.addSchema);
-    const result = await contacts.addContact(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.delete('/:id', controllerWrapper(controllers.removeById));
 
-router.delete('/:id', async (req, res, next) => {
-  try {
-    const {id} = req.params;
-    const result = await contacts.removeContact(id);
-    if (!result) {
-      throw RequestError(404, 'Not found');
-    }
-    res.status(200).json({message: 'contact deleted'});
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.put('/:id', async (req, res, next) => {
-  try {
-    validate(schema.addSchema);
-    const {id} = req.params;
-    const result = await contacts.updateContact(id, req.body);
-    if (!result) {
-      throw RequestError(404, 'Not found');
-    }
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.put(
+  '/:id',
+  validationBody(schemas.addSchema),
+  controllerWrapper(controllers.updateById)
+);
 
 module.exports = router;
