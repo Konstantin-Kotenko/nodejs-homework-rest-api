@@ -28,4 +28,10 @@ router.put(
   ctrlWrapper(ctrl.updateById)
 );
 
+router.patch(
+  '/:id/favorite',
+  validationBody(schemas.updateFavoriteSchema),
+  ctrlWrapper(ctrl.updateFavorite)
+);
+
 module.exports = router;
