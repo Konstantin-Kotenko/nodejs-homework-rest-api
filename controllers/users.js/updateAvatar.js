@@ -10,8 +10,7 @@ const updateAvatar = async (req, res) => {
   const {_id} = req.user;
   const {path: tmpUpload, originalname} = req.file;
   if (req.file) {
-    const {file} = req;
-    const image = await jimp.read(file.path);
+    const image = await jimp.read(tmpUpload);
     await image
       .autocrop()
       .cover(
@@ -19,7 +18,7 @@ const updateAvatar = async (req, res) => {
         250,
         jimp.HORIZONTAL_ALIGN_CENTER | jimp.VERTICAL_ALIGN_MIDDLE
       )
-      .writeAsync(file.path);
+      .writeAsync(tmpUpload);
   }
   const extention = originalname.split('.').pop();
   const filename = `${_id}.${extention}`;
