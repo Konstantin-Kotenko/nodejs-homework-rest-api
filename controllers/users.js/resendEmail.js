@@ -10,16 +10,14 @@ const resendEmail = async (req, res) => {
   if (!user) {
     throw RequestError(400, 'missing required field email');
   }
-  if (user.verify) {
-    res.status(400, 'Verification has already been passed');
-  }
 
   const mail = {
     to: email,
     subject: 'Verify email',
     html: `<a target='_blank' href='${BASE_URL}/api/users/users/verify/${user.verificationToken}'>Click to verify you email</a>`,
   };
-  await sendEmail(email);
+
+  await sendEmail(mail);
 
   res.json({
     message: 'Verification email sent',
