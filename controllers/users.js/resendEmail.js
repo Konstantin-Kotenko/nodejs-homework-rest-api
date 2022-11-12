@@ -10,7 +10,7 @@ const resendEmail = async (req, res) => {
   const user = await User.findOne({email});
 
   if (user.verify) {
-    res.status(400, 'Verification has already been passed');
+    throw RequestError(400, 'Verification has already been passed');
   }
 
   const mail = {
