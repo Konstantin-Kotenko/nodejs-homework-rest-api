@@ -1,4 +1,4 @@
-const {User} = requi('../../models/user');
+const {User} = require('../../models/user');
 
 const {RequestError} = require('../../helpers');
 
